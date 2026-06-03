@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReMemory — prototyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --blue:#2B5C9E; --blue-d:#1F3A6B; --blue-l:#E6F0FB;
+  --red:#E8453C; --orange:#EA5A3D; --amber:#F5B324;
+  --screen:#F4F7FB; --card:#FFFFFF; --border:#E7EDF3;
+  --text:#28384A; --muted:#7E8DA0;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px 16px;
+  font-family:'Nunito',sans-serif;color:var(--text);
+  background:
+    radial-gradient(900px 600px at 15% 0%, #DCEBFB 0%, rgba(220,235,251,0) 55%),
+    radial-gradient(800px 600px at 100% 100%, #FBE7DA 0%, rgba(251,231,218,0) 55%),
+    #EEF3F9;}
+h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
+.phone{width:392px;height:812px;background:#0E1218;border-radius:48px;padding:13px;
+  box-shadow:0 40px 80px -20px rgba(20,40,80,.45),0 0 0 2px #232a34;position:relative}
+.phone::after{content:"";position:absolute;top:26px;left:50%;transform:translateX(-50%);
+  width:120px;height:30px;background:#0E1218;border-radius:18px;z-index:30}
+.screen{width:100%;height:100%;background:var(--screen);border-radius:36px;overflow:hidden;
+  display:flex;flex-direction:column;position:relative}
+.statusbar{height:42px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px 0 30px;font-size:13px;font-weight:600;color:var(--blue-d);z-index:5}
+.statusbar .si{display:flex;gap:6px;font-size:15px}
+.views{flex:1;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;display:none;flex-direction:column}
+.view.active{display:flex;animation:viewIn .3s cubic-bezier(.22,1,.36,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.appbar{flex:0 0 auto;height:58px;background:var(--blue);color:#fff;display:flex;align-items:center;
+  justify-content:space-between;padding:0 18px;box-shadow:0 2px 10px rgba(31,58,107,.18);z-index:4}
+.appbar .ttl{font-family:'Poppins';font-weight:600;font-size:17px}
+.appbar i{font-size:23px;cursor:pointer}
+.appbar .sp{width:23px}
+.vbody{flex:1;overflow-y:auto;padding:18px 20px 24px;scroll-behavior:smooth}
+.vbody::-webkit-scrollbar{width:0}
+.card{background:var(--card);border-radius:18px;border:1px solid var(--border);overflow:hidden;
+  margin-bottom:16px;box-shadow:0 6px 18px -10px rgba(31,58,107,.18)}
+.photo{position:relative;height:188px}
+.photo .ov{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(15,30,55,.62));
+  color:#fff;padding:14px 16px}
+.photo .ov .pt{font-family:'Poppins';font-weight:600;font-size:16px}
+.photo .ov .ps{font-size:13px;opacity:.92}
+.photo .lk{position:absolute;top:12px;right:12px;color:#fff;font-size:23px;cursor:pointer;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+.photo .lk.liked{color:var(--red)}
+.reacts{display:flex;align-items:center;gap:20px;padding:11px 16px;color:var(--muted);font-size:14px;font-weight:600}
+.reacts .r{display:flex;align-items:center;gap:7px;cursor:pointer}
+.reacts .r i{font-size:20px}
+.reacts .like.liked{color:var(--red)}
+.reacts .save.saved{color:var(--amber)}
+.reacts .ml{margin-left:auto}
+.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
+.head{display:flex;align-items:center;gap:11px;padding:12px 16px}
+.av{border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins';font-weight:600;flex:0 0 auto}
+.name{font-family:'Poppins';font-weight:600;font-size:14px;color:var(--blue-d)}
+.sub{font-size:12px;color:var(--muted)}
+.jbody{padding:0 16px 4px;font-size:15px;line-height:1.55}
+.jicon{width:30px;height:30px;border-radius:9px;background:var(--blue-l);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:17px}
+.tabbar{flex:0 0 auto;height:70px;background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;box-shadow:0 -4px 16px -8px rgba(31,58,107,.2)}
+.tab{color:#A6B4C4;font-size:25px;cursor:pointer;transition:color .15s,transform .15s;background:none;border:none;padding:8px}
+.tab.on{color:var(--blue)}
+.tab:active{transform:scale(.9)}
+.tabcam{width:60px;height:60px;border-radius:50%;background:var(--blue);color:#fff;font-size:26px;
+  display:flex;align-items:center;justify-content:center;margin-top:-22px;border:4px solid #fff;
+  box-shadow:0 8px 18px -4px rgba(43,92,158,.55);cursor:pointer}
+.tabcam:active{transform:scale(.94)}
+.btn{font-family:'Poppins';font-weight:600;border:none;border-radius:14px;padding:14px;font-size:16px;
+  width:100%;cursor:pointer;transition:transform .1s,filter .15s}
+.btn:active{transform:scale(.98)}
+.btn-pri{background:var(--blue);color:#fff}.btn-pri:active{filter:brightness(.95)}
+.btn-out{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+.chip{font-family:'Poppins';font-weight:600;font-size:13px;border-radius:20px;padding:7px 16px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--muted)}
+.chip.on{background:var(--blue-l);color:var(--blue);border-color:var(--blue-l)}
+.tabsrow{display:flex;gap:9px;margin-bottom:16px}
+.typetile{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px 8px;text-align:center;cursor:pointer;transition:.15s}
+.typetile.sel{border-color:var(--blue);background:var(--blue-l)}
+.typetile i{font-size:25px;color:var(--blue)}
+.typetile div{font-size:13px;margin-top:6px;font-weight:600}
+.field{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:13px;font-size:15px;font-family:'Nunito';width:100%;resize:none}
+.field:focus{outline:none;border-color:var(--blue)}
+.row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:11px 13px;margin-bottom:11px}
+.cmt{display:flex;gap:10px;margin-bottom:13px}
+.cmt .bubble{background:#fff;border:1px solid var(--border);border-radius:14px;padding:9px 12px;flex:1}
+.cmt .cname{font-family:'Poppins';font-weight:600;font-size:13px;color:var(--blue-d)}
+.cmt .ctext{font-size:14px;line-height:1.45}
+.cbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--border);background:#fff}
+.cbar input{flex:1;border:none;background:#EEF3F9;border-radius:22px;padding:11px 16px;font-family:'Nunito';font-size:14px}
+.cbar input:focus{outline:none}
+.cbar i{color:var(--blue);font-size:24px;cursor:pointer}
+.sec{font-family:'Poppins';font-weight:600;font-size:14px;color:var(--blue-d);margin:4px 0 11px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:13px 6px;text-align:center}
+.stat b{font-family:'Poppins';font-size:20px;color:var(--blue);display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.thumb{height:96px;border-radius:12px}
+.tl{position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:10px;width:2px;background:#CDD9E6}
+.tle{position:relative;margin-bottom:18px}
+.tle .dot{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 1px #CDD9E6}
+.badge{background:var(--amber);color:#5a3d00;font-family:'Poppins';font-weight:600;font-size:12px;border-radius:16px;padding:4px 11px;display:inline-flex;gap:5px;align-items:center}
+.menu{position:absolute;inset:0;z-index:20;display:none}
+.menu.open{display:block}
+.menu .scrim{position:absolute;inset:0;background:rgba(15,30,55,.45);animation:fade .2s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.menu .panel{position:absolute;top:0;bottom:0;left:0;width:74%;background:#fff;padding:26px 18px;
+  display:flex;flex-direction:column;gap:4px;animation:slide .26s cubic-bezier(.22,1,.36,1);box-shadow:8px 0 30px rgba(0,0,0,.2)}
+@keyframes slide{from{transform:translateX(-100%)}to{transform:none}}
+.menu .mlogo{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.menu .mlogo span{font-family:'Poppins';font-weight:700;font-size:21px;color:var(--blue-d)}
+.mitem{display:flex;align-items:center;gap:14px;padding:13px 12px;border-radius:12px;cursor:pointer;font-weight:600;font-size:15px;color:var(--text)}
+.mitem:hover{background:var(--blue-l)}
+.mitem i{font-size:21px;color:var(--blue)}
+.toast{position:absolute;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--blue-d);color:#fff;
+  padding:11px 20px;border-radius:22px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;
+  transition:.3s;z-index:25;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.fadein{animation:viewIn .35s ease}
+.hint{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screen">
+
+    <div class="statusbar">
+      <span id="clock">9:41</span>
+      <span class="si"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-3"></i></span>
+    </div>
+
+    <div class="views">
+
+      <!-- WELCOME -->
+      <div class="view active" id="view-welcome">
+        <div class="vbody" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px">
+          <svg width="118" height="106" viewBox="0 0 36 32" style="margin-bottom:18px">
+            <defs><clipPath id="hl"><path d="M18 31 C11 24 2 18 2 11 C2 6 6 3 10 3 C14 3 17 6 18 9 C19 6 22 3 26 3 C30 3 34 6 34 11 C34 18 25 24 18 31 Z"/></clipPath></defs>
+            <g clip-path="url(#hl)"><rect width="18" height="32" fill="var(--orange)"/><rect x="18" width="18" height="32" fill="var(--amber)"/></g>
+          </svg>
+          <div class="font-d" style="font-weight:700;font-size:34px;color:var(--blue-d)">ReMemory</div>
+          <div style="color:var(--muted);font-size:15px;margin-top:6px">Prywatne social media dla rodziny</div>
+          <div style="width:100%;margin-top:42px;display:flex;flex-direction:column;gap:12px">
+            <button class="btn btn-pri" onclick="tab('home')">Zaloguj się</button>
+            <button class="btn btn-out" onclick="tab('home')">Utwórz konto rodzinne</button>
+          </div>
+          <div onclick="tab('home')" style="margin-top:20px;color:var(--muted);font-weight:600;font-size:14px;cursor:pointer"><i class="ti ti-ticket"></i> Dołącz przez zaproszenie</div>
+          <div class="hint">To klikalny prototyp — naciśnij dowolny przycisk.</div>
+        </div>
+      </div>
+
+      <!-- HOME -->
+      <div class="view" id="view-home">
+        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Moja Tablica</span><i class="ti ti-bell"></i></div>
+        <div class="vbody" id="homefeed">
+          <div class="card">
+            <div class="photo" style="background:linear-gradient(#BFE0F2 60%,#E9D9A6 60%)">
+              <i class="ti ti-heart lk" onclick="lkPhoto(this)"></i>
+              <div class="ov"><div class="pt">Wakacje nad morzem</div><div class="ps">Dzień na plaży!</div></div>
+            </div>
+            <div class="reacts">
+              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
+              <span class="r" onclick="go('detail')"><i class="ti ti-message-circle"></i><span>8</span></span>
+              <span class="r save ml" onclick="this.classList.toggle('saved')"><i class="ti ti-star"></i></span>
+            </div>
+          </div>
+          <div class="card" onclick="go('detail')" style="cursor:pointer">
+            <div class="head"><div class="jicon"><i class="ti ti-book"></i></div><div class="name">Wpis Dziennika</div></div>
+            <div class="jbody">Dziś Zosia poszła do szkoły po raz pierwszy! Wszyscy byliśmy bardzo podekscytowani.</div>
+            <div class="reacts">
+              <span class="r like" onclick="event.stopPropagation();like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
+              <span class="r"><i class="ti ti-message-circle"></i><span>8</span></span>
+              <span class="r save ml" onclick="event.stopPropagation();this.classList.toggle('saved')"><i class="ti ti-star"></i></span>
+            </div>
+          </div>
+          <div class="grid3" style="grid-template-columns:1fr 1fr">
+            <div class="thumb" style="background:#CFE3F4"></div>
+            <div class="thumb" style="background:#D9E8CF"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAMILY -->
+      <div class="view" id="view-family">
+        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Tablica Rodzinna</span><i class="ti ti-bell"></i></div>
+        <div class="vbody">
+          <div class="tabsrow"><div class="chip on">Najnowsze</div><div class="chip">Najwięcej polubień</div></div>
+          <div class="card">
+            <div class="head"><div class="av" style="width:44px;height:44px;background:var(--blue);font-size:15px">AM</div><div><div class="name">Anna &amp; Marek</div><div class="sub">2 godz. temu</div></div></div>
+            <div class="photo" style="height:160px;background:#CDE3B5"><div class="ov"><div class="pt">Niedzielny spacer w parku</div></div></div>
+            <div class="reacts">
+              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
+              <span class="r" onclick="go('detail')"><i class="ti ti-message-circle"></i><span>12</span></span>
+              <span class="r ml"><i class="ti ti-share"></i></span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="head"><div class="av" style="width:44px;height:44px;background:#E0A93C;font-size:15px">TD</div><div><div class="name">Tata &amp; Dawid</div><div class="sub">wczoraj</div></div></div>
+            <div class="jbody">Słoneczny dzień na działce u dziadków.</div>
+            <div class="reacts">
+              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">18</span></span>
+              <span class="r"><i class="ti ti-message-circle"></i><span>4</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD -->
+      <div class="view" id="view-add">
+        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Dodaj Wspomnienie</span><span class="sp"></span></div>
+        <div class="vbody">
+          <div class="grid3" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+            <div class="typetile sel" onclick="pickType(this,'Zdjęcie')"><i class="ti ti-photo"></i><div>Zdjęcie</div></div>
+            <div class="typetile" onclick="pickType(this,'Wideo')"><i class="ti ti-video"></i><div>Wideo</div></div>
+            <div class="typetile" onclick="pickType(this,'Notatka')"><i class="ti ti-note"></i><div>Notatka</div></div>
+            <div class="typetile" onclick="pickType(this,'Audio')"><i class="ti ti-microphone"></i><div>Audio</div></div>
+          </div>
+          <textarea class="field" id="memdesc" rows="3" placeholder="Dodaj opis wspomnienia..."></textarea>
+          <div class="row" style="margin-top:14px;justify-content:space-between">
+            <span style="font-weight:600;font-size:14px"><i class="ti ti-lock" style="color:var(--blue)"></i> Widoczność</span>
+            <div style="display:flex;gap:7px"><div class="chip" id="vis-me" onclick="setVis('me')">Tylko ja</div><div class="chip on" id="vis-fam" onclick="setVis('fam')">Rodzina</div></div>
+          </div>
+          <button class="btn btn-pri" style="margin-top:16px" onclick="saveMemory()">Zapisz wspomnienie</button>
+        </div>
+      </div>
+
+      <!-- DETAIL -->
+      <div class="view" id="view-detail">
+        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Wpis</span><i class="ti ti-dots"></i></div>
+        <div class="vbody" id="detailbody">
+          <div class="photo" style="height:170px;border-radius:14px;background:linear-gradient(#BFE0F2 64%,#E9D9A6 64%);margin-bottom:12px">
+            <i class="ti ti-heart lk" onclick="lkPhoto(this)"></i>
+          </div>
+          <div class="font-d" style="font-weight:600;font-size:17px;color:var(--blue-d)">Wakacje nad morzem</div>
+          <div class="reacts" style="padding:9px 0 14px">
+            <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
+            <span class="r"><i class="ti ti-message-circle"></i><span id="ccount">2</span> komentarze</span>
+          </div>
+          <div id="dcomments">
+            <div class="cmt"><div class="av" style="width:34px;height:34px;background:#C0603C;font-size:12px">BK</div><div class="bubble"><div class="cname">Babcia Krysia</div><div class="ctext">Cudowne zdjęcie! Tęsknię za Wami.</div></div></div>
+            <div class="cmt"><div class="av" style="width:34px;height:34px;background:#3C8C7A;font-size:12px">WP</div><div class="bubble"><div class="cname">Wujek Piotr</div><div class="ctext">Następnym razem jadę z Wami!</div></div></div>
+          </div>
+        </div>
+        <div class="cbar">
+          <input id="cinput" placeholder="Napisz komentarz..." onkeydown="if(event.key==='Enter')addComment()">
+          <i class="ti ti-send" onclick="addComment()"></i>
+        </div>
+      </div>
+
+      <!-- HIGHLIGHTS -->
+      <div class="view" id="view-highlights">
+        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Wyróżnione</span><i class="ti ti-star"></i></div>
+        <div class="vbody">
+          <div class="card">
+            <div class="photo" style="background:#D6CFEA">
+              <div style="position:absolute;top:12px;left:12px"><span class="badge"><i class="ti ti-star"></i> Wyróżnione</span></div>
+              <div class="ov"><div class="pt">25. rocznica ślubu</div><div class="ps">Najważniejszy dzień roku</div></div>
+            </div>
+          </div>
+          <div class="sec">Najważniejsze momenty</div>
+          <div class="grid3" style="grid-template-columns:1fr 1fr;gap:12px">
+            <div class="thumb" style="height:104px;background:#BFE0F2;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
+            <div class="thumb" style="height:104px;background:#D9E8CF;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
+            <div class="thumb" style="height:104px;background:#F2D9C0;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
+            <div class="thumb" style="height:104px;background:#CFE3F4;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="view" id="view-profile">
+        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Profil</span><i class="ti ti-settings"></i></div>
+        <div class="vbody">
+          <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px">
+            <div class="av" style="width:88px;height:88px;background:var(--blue);font-size:30px;margin-bottom:10px">AK</div>
+            <div class="font-d" style="font-weight:600;font-size:19px;color:var(--blue-d)">Anna Kowalska</div>
+            <div class="sub" style="margin-top:3px"><i class="ti ti-users"></i> Rodzina Kowalskich</div>
+          </div>
+          <div class="grid3" style="margin-bottom:18px">
+            <div class="stat"><b>128</b><span>Wspomnienia</span></div>
+            <div class="stat"><b>34</b><span>Wpisy</span></div>
+            <div class="stat"><b>6</b><span>Rodzina</span></div>
+          </div>
+          <div class="sec">Skróty</div>
+          <div class="row" onclick="go('familyManage')" style="cursor:pointer"><i class="ti ti-users" style="color:var(--blue);font-size:21px"></i><span style="font-weight:600">Moja Rodzina</span><i class="ti ti-chevron-right ml" style="color:var(--muted)"></i></div>
+          <div class="row" onclick="go('timeline')" style="cursor:pointer"><i class="ti ti-timeline" style="color:var(--blue);font-size:21px"></i><span style="font-weight:600">Oś czasu</span><i class="ti ti-chevron-right ml" style="color:var(--muted)"></i></div>
+          <button class="btn btn-out" style="margin-top:10px" onclick="tab('welcome')">Wyloguj się</button>
+        </div>
+      </div>
+
+      <!-- FAMILY MANAGE -->
+      <div class="view" id="view-familyManage">
+        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Moja Rodzina</span><span class="sp"></span></div>
+        <div class="vbody">
+          <div class="row"><div class="av" style="width:40px;height:40px;background:var(--blue);font-size:13px">AN</div><div style="flex:1"><div class="name">Anna</div><div class="sub">Mama</div></div><i class="ti ti-crown" style="color:var(--amber)"></i></div>
+          <div class="row"><div class="av" style="width:40px;height:40px;background:#E0A93C;font-size:13px">MA</div><div style="flex:1"><div class="name">Marek</div><div class="sub">Tata</div></div></div>
+          <div class="row"><div class="av" style="width:40px;height:40px;background:#3C8C7A;font-size:13px">ZO</div><div style="flex:1"><div class="name">Zosia</div><div class="sub">Córka</div></div></div>
+          <div class="row"><div class="av" style="width:40px;height:40px;background:#C0603C;font-size:13px">BK</div><div style="flex:1"><div class="name">Babcia Krysia</div><div class="sub">Babcia</div></div></div>
+          <button class="btn btn-pri" style="margin-top:6px" onclick="toast('Wysłano zaproszenie')"><i class="ti ti-user-plus"></i> Zaproś członka rodziny</button>
+          <div style="background:var(--blue-l);border-radius:14px;padding:14px;text-align:center;margin-top:14px">
+            <div style="font-size:12px;color:var(--muted)">Kod zaproszenia rodziny</div>
+            <div class="font-d" style="font-weight:700;font-size:20px;color:var(--blue);letter-spacing:2px;margin-top:3px">REM-2K4P</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIMELINE -->
+      <div class="view" id="view-timeline">
+        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Oś czasu</span><i class="ti ti-calendar"></i></div>
+        <div class="vbody">
+          <div class="tabsrow"><div class="chip on">2025</div><div class="chip">2024</div><div class="chip">2023</div></div>
+          <div class="tl">
+            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Wrzesień 2025</div>
+              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#D9E8CF"></div><div class="name">Pierwszy dzień szkoły</div></div></div>
+            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Sierpień 2025</div>
+              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#BFE0F2"></div><div class="name">Wakacje nad morzem</div></div></div>
+            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Lipiec 2025</div>
+              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#F2D9C0"></div><div class="name">Urodziny Babci</div></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABBAR -->
+    <div class="tabbar" id="tabbar" style="display:none">
+      <button class="tab on" id="tab-home" onclick="tab('home')"><i class="ti ti-home"></i></button>
+      <button class="tab" id="tab-heart" onclick="tab('family')"><i class="ti ti-heart"></i></button>
+      <div class="tabcam" onclick="go('add')"><i class="ti ti-camera"></i></div>
+      <button class="tab" id="tab-star" onclick="tab('highlights')"><i class="ti ti-star"></i></button>
+      <button class="tab" id="tab-user" onclick="tab('profile')"><i class="ti ti-user"></i></button>
+    </div>
+
+    <!-- MENU DRAWER -->
+    <div class="menu" id="menu">
+      <div class="scrim" onclick="closeMenu()"></div>
+      <div class="panel">
+        <div class="mlogo">
+          <svg width="34" height="30" viewBox="0 0 36 32"><g clip-path="url(#hl)"><rect width="18" height="32" fill="var(--orange)"/><rect x="18" width="18" height="32" fill="var(--amber)"/></g></svg>
+          <span>ReMemory</span>
+        </div>
+        <div class="mitem" onclick="tab('home');closeMenu()"><i class="ti ti-home"></i> Moja Tablica</div>
+        <div class="mitem" onclick="tab('family');closeMenu()"><i class="ti ti-users-group"></i> Tablica Rodzinna</div>
+        <div class="mitem" onclick="go('add');closeMenu()"><i class="ti ti-plus"></i> Dodaj Wspomnienie</div>
+        <div class="mitem" onclick="tab('highlights');closeMenu()"><i class="ti ti-star"></i> Wyróżnione</div>
+        <div class="mitem" onclick="tab('profile');closeMenu()"><i class="ti ti-user"></i> Profil</div>
+        <div class="mitem" onclick="go('familyManage');closeMenu()"><i class="ti ti-users"></i> Moja Rodzina</div>
+        <div class="mitem" onclick="go('timeline');closeMenu()"><i class="ti ti-timeline"></i> Oś czasu</div>
+        <div class="mitem" style="margin-top:auto;color:var(--red)" onclick="tab('welcome');closeMenu()"><i class="ti ti-logout" style="color:var(--red)"></i> Wyloguj się</div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+  </div>
+</div>
+
+<script>
+const tabbarViews = new Set(['home','family','add','highlights','profile']);
+const tabMap = {home:'tab-home',family:'tab-heart',add:null,highlights:'tab-star',profile:'tab-user'};
+let navStack = ['welcome'];
+
+function render(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el = document.getElementById('view-'+id);
+  el.classList.add('active');
+  const b = el.querySelector('.vbody'); if(b) b.scrollTop = 0;
+  document.getElementById('tabbar').style.display = tabbarViews.has(id) ? 'flex' : 'none';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  if(tabMap[id]) document.getElementById(tabMap[id]).classList.add('on');
+}
+function go(id){ navStack.push(id); render(id); }
+function tab(id){ navStack=[id]; render(id); }
+function back(){ navStack.pop(); render(navStack[navStack.length-1]||'home'); }
+
+function like(el){
+  el.classList.toggle('liked');
+  const c = el.querySelector('.cnt');
+  if(c){ let n=parseInt(c.textContent,10); c.textContent = el.classList.contains('liked')? n+1 : n-1; }
+  const i = el.querySelector('i'); i.classList.remove('pop'); void i.offsetWidth; i.classList.add('pop');
+}
+function lkPhoto(el){
+  el.classList.toggle('liked');
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+}
+
+let visibility='fam';
+function setVis(v){ visibility=v;
+  document.getElementById('vis-me').classList.toggle('on', v==='me');
+  document.getElementById('vis-fam').classList.toggle('on', v==='fam');
+}
+let memType='Zdjęcie';
+function pickType(el,name){ document.querySelectorAll('.typetile').forEach(t=>t.classList.remove('sel')); el.classList.add('sel'); memType=name; }
+function saveMemory(){
+  const txt = document.getElementById('memdesc').value.trim();
+  const body = txt || (memType + ' — nowe wspomnienie');
+  const card = document.createElement('div');
+  card.className='card fadein';
+  card.innerHTML =
+    '<div class="head"><div class="jicon"><i class="ti ti-book"></i></div><div><div class="name">'+memType+'</div><div class="sub">teraz · '+(visibility==='fam'?'Rodzina':'Tylko ja')+'</div></div></div>'+
+    '<div class="jbody">'+escapeHtml(body)+'</div>'+
+    '<div class="reacts"><span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">0</span></span>'+
+    '<span class="r"><i class="ti ti-message-circle"></i><span>0</span></span>'+
+    '<span class="r save ml" onclick="this.classList.toggle(\'saved\')"><i class="ti ti-star"></i></span></div>';
+  document.getElementById('homefeed').prepend(card);
+  document.getElementById('memdesc').value='';
+  tab('home');
+  toast('Wspomnienie zapisane');
+}
+function addComment(){
+  const inp = document.getElementById('cinput');
+  const t = inp.value.trim(); if(!t) return;
+  const d = document.createElement('div'); d.className='cmt';
+  d.innerHTML='<div class="av" style="width:34px;height:34px;background:var(--blue);font-size:12px">Ty</div><div class="bubble"><div class="cname">Ty</div><div class="ctext"></div></div>';
+  d.querySelector('.ctext').textContent=t;
+  document.getElementById('dcomments').appendChild(d);
+  const cc=document.getElementById('ccount'); cc.textContent=parseInt(cc.textContent,10)+1;
+  inp.value='';
+  const b=document.getElementById('detailbody'); b.scrollTop=b.scrollHeight;
+}
+function openMenu(){ document.getElementById('menu').classList.add('open'); }
+function closeMenu(){ document.getElementById('menu').classList.remove('open'); }
+let tt;
+function toast(msg){ const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('show'),1800); }
+function escapeHtml(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function clock(){ const d=new Date(); document.getElementById('clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
+clock(); setInterval(clock,30000);
+</script>
+</body>
+</html>

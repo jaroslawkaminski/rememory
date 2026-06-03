@@ -2,12 +2,12 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReMemory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ReMemory — prototyp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
 <style>
 :root{
   --blue:#2B5C9E; --blue-d:#1F3A6B; --blue-l:#E6F0FB;
@@ -15,6 +15,14 @@
   --screen:#F4F7FB; --card:#FFFFFF; --border:#E7EDF3;
   --text:#28384A; --muted:#7E8DA0;
 }
+body.dark{background:radial-gradient(900px 600px at 15% 0%,#13202f 0%,rgba(0,0,0,0) 55%),radial-gradient(800px 600px at 100% 100%,#241a16 0%,rgba(0,0,0,0) 55%),#0a0e13}
+.screen.dark{--screen:#0F151C;--card:#1A222C;--border:#2A3744;--text:#E7EDF4;--muted:#8A98A8;--blue-l:#1E2C3C;--blue-d:#DCE7F5}
+.screen.dark .appbar{background:#152234}
+.screen.dark .tabbar,.screen.dark .cbar,.screen.dark .menu .panel{background:var(--card)}
+.screen.dark .chip,.screen.dark .typetile,.screen.dark .field,.screen.dark .stat,.screen.dark .row,.screen.dark .btn-out,.screen.dark .cmt .bubble{background:var(--card)}
+.screen.dark .cbar input{background:var(--blue-l);color:var(--text)}
+.screen.dark .tabcam{border-color:var(--card)}
+.screen.dark .toast,.screen.dark .launcher{background:#2B5C9E}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px 16px;
   font-family:'Nunito',sans-serif;color:var(--text);
@@ -23,15 +31,25 @@ body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px 16px
     radial-gradient(800px 600px at 100% 100%, #FBE7DA 0%, rgba(251,231,218,0) 55%),
     #EEF3F9;}
 h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
+.ic{width:1.15em;height:1.15em;display:inline-block;vertical-align:-0.2em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.statusbar .ic{width:17px;height:17px;vertical-align:middle}
+.appbar .ic{width:25px;height:25px}
+.tab .ic{width:27px;height:27px}
+.tabcam .ic{width:28px;height:28px}
+.reacts .ic{width:21px;height:21px}
+.lk{width:26px;height:26px}
+.mitem .ic{width:23px;height:23px}
+.jicon .ic{width:18px;height:18px}
+.row .ic{width:22px;height:22px}
 .phone{width:392px;height:812px;background:#0E1218;border-radius:48px;padding:13px;
   box-shadow:0 40px 80px -20px rgba(20,40,80,.45),0 0 0 2px #232a34;position:relative}
 .phone::after{content:"";position:absolute;top:26px;left:50%;transform:translateX(-50%);
   width:120px;height:30px;background:#0E1218;border-radius:18px;z-index:30}
-.screen{width:100%;height:100%;background:var(--screen);border-radius:36px;overflow:hidden;
+.screen{width:100%;height:100%;background:var(--screen);color:var(--text);border-radius:36px;overflow:hidden;
   display:flex;flex-direction:column;position:relative}
 .statusbar{height:42px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
   padding:0 26px 0 30px;font-size:13px;font-weight:600;color:var(--blue-d);z-index:5}
-.statusbar .si{display:flex;gap:6px;font-size:15px}
+.statusbar .si{display:flex;gap:7px;align-items:center}
 .views{flex:1;position:relative;overflow:hidden}
 .view{position:absolute;inset:0;display:none;flex-direction:column}
 .view.active{display:flex;animation:viewIn .3s cubic-bezier(.22,1,.36,1)}
@@ -39,8 +57,8 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
 .appbar{flex:0 0 auto;height:58px;background:var(--blue);color:#fff;display:flex;align-items:center;
   justify-content:space-between;padding:0 18px;box-shadow:0 2px 10px rgba(31,58,107,.18);z-index:4}
 .appbar .ttl{font-family:'Poppins';font-weight:600;font-size:17px}
-.appbar i{font-size:23px;cursor:pointer}
-.appbar .sp{width:23px}
+.appbar .ic{cursor:pointer}
+.appbar .sp{width:25px}
 .vbody{flex:1;overflow-y:auto;padding:18px 20px 24px;scroll-behavior:smooth}
 .vbody::-webkit-scrollbar{width:0}
 .card{background:var(--card);border-radius:18px;border:1px solid var(--border);overflow:hidden;
@@ -50,12 +68,11 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
   color:#fff;padding:14px 16px}
 .photo .ov .pt{font-family:'Poppins';font-weight:600;font-size:16px}
 .photo .ov .ps{font-size:13px;opacity:.92}
-.photo .lk{position:absolute;top:12px;right:12px;color:#fff;font-size:23px;cursor:pointer;
+.lk{position:absolute;top:12px;right:12px;color:#fff;cursor:pointer;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
-.photo .lk.liked{color:var(--red)}
+.lk.liked{color:var(--red)}
 .reacts{display:flex;align-items:center;gap:20px;padding:11px 16px;color:var(--muted);font-size:14px;font-weight:600}
 .reacts .r{display:flex;align-items:center;gap:7px;cursor:pointer}
-.reacts .r i{font-size:20px}
 .reacts .like.liked{color:var(--red)}
 .reacts .save.saved{color:var(--amber)}
 .reacts .ml{margin-left:auto}
@@ -68,18 +85,18 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
 .sub{font-size:12px;color:var(--muted)}
 .jbody{padding:0 16px 4px;font-size:15px;line-height:1.55}
 .jicon{width:30px;height:30px;border-radius:9px;background:var(--blue-l);color:var(--blue);
-  display:flex;align-items:center;justify-content:center;font-size:17px}
+  display:flex;align-items:center;justify-content:center}
 .tabbar{flex:0 0 auto;height:70px;background:#fff;border-top:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-around;box-shadow:0 -4px 16px -8px rgba(31,58,107,.2)}
-.tab{color:#A6B4C4;font-size:25px;cursor:pointer;transition:color .15s,transform .15s;background:none;border:none;padding:8px}
+.tab{color:#A6B4C4;cursor:pointer;transition:color .15s,transform .15s;background:none;border:none;padding:8px;display:flex}
 .tab.on{color:var(--blue)}
 .tab:active{transform:scale(.9)}
-.tabcam{width:60px;height:60px;border-radius:50%;background:var(--blue);color:#fff;font-size:26px;
+.tabcam{width:60px;height:60px;border-radius:50%;background:var(--blue);color:#fff;
   display:flex;align-items:center;justify-content:center;margin-top:-22px;border:4px solid #fff;
   box-shadow:0 8px 18px -4px rgba(43,92,158,.55);cursor:pointer}
 .tabcam:active{transform:scale(.94)}
 .btn{font-family:'Poppins';font-weight:600;border:none;border-radius:14px;padding:14px;font-size:16px;
-  width:100%;cursor:pointer;transition:transform .1s,filter .15s}
+  width:100%;cursor:pointer;transition:transform .1s,filter .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.98)}
 .btn-pri{background:var(--blue);color:#fff}.btn-pri:active{filter:brightness(.95)}
 .btn-out{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
@@ -88,9 +105,9 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
 .tabsrow{display:flex;gap:9px;margin-bottom:16px}
 .typetile{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px 8px;text-align:center;cursor:pointer;transition:.15s}
 .typetile.sel{border-color:var(--blue);background:var(--blue-l)}
-.typetile i{font-size:25px;color:var(--blue)}
+.typetile .ic{width:26px;height:26px;color:var(--blue)}
 .typetile div{font-size:13px;margin-top:6px;font-weight:600}
-.field{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:13px;font-size:15px;font-family:'Nunito';width:100%;resize:none}
+.field{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:13px;font-size:15px;font-family:'Nunito';width:100%;resize:none;color:var(--text)}
 .field:focus{outline:none;border-color:var(--blue)}
 .row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:11px 13px;margin-bottom:11px}
 .cmt{display:flex;gap:10px;margin-bottom:13px}
@@ -98,57 +115,104 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
 .cmt .cname{font-family:'Poppins';font-weight:600;font-size:13px;color:var(--blue-d)}
 .cmt .ctext{font-size:14px;line-height:1.45}
 .cbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--border);background:#fff}
-.cbar input{flex:1;border:none;background:#EEF3F9;border-radius:22px;padding:11px 16px;font-family:'Nunito';font-size:14px}
+.cbar input{flex:1;border:none;background:#EEF3F9;border-radius:22px;padding:11px 16px;font-family:'Nunito';font-size:14px;color:var(--text)}
 .cbar input:focus{outline:none}
-.cbar i{color:var(--blue);font-size:24px;cursor:pointer}
+.cbar .ic{color:var(--blue);width:24px;height:24px;cursor:pointer}
 .sec{font-family:'Poppins';font-weight:600;font-size:14px;color:var(--blue-d);margin:4px 0 11px}
 .stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:13px 6px;text-align:center}
 .stat b{font-family:'Poppins';font-size:20px;color:var(--blue);display:block}
 .stat span{font-size:12px;color:var(--muted)}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.thumb{height:96px;border-radius:12px}
+.thumb{height:96px;border-radius:12px;position:relative}
 .tl{position:relative;padding-left:24px}
 .tl::before{content:"";position:absolute;left:6px;top:6px;bottom:10px;width:2px;background:#CDD9E6}
 .tle{position:relative;margin-bottom:18px}
-.tle .dot{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 0 0 1px #CDD9E6}
+.tle .dot{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid var(--screen);box-shadow:0 0 0 1px #CDD9E6}
 .badge{background:var(--amber);color:#5a3d00;font-family:'Poppins';font-weight:600;font-size:12px;border-radius:16px;padding:4px 11px;display:inline-flex;gap:5px;align-items:center}
 .menu{position:absolute;inset:0;z-index:20;display:none}
 .menu.open{display:block}
 .menu .scrim{position:absolute;inset:0;background:rgba(15,30,55,.45);animation:fade .2s}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.menu .panel{position:absolute;top:0;bottom:0;left:0;width:74%;background:#fff;padding:26px 18px;
-  display:flex;flex-direction:column;gap:4px;animation:slide .26s cubic-bezier(.22,1,.36,1);box-shadow:8px 0 30px rgba(0,0,0,.2)}
+.menu .panel{position:absolute;top:0;bottom:0;left:0;width:80%;background:#fff;padding:56px 18px 24px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:3px;animation:slide .26s cubic-bezier(.22,1,.36,1);box-shadow:8px 0 30px rgba(0,0,0,.2)}
+.menu .panel::-webkit-scrollbar{width:0}
+.mnum{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
 @keyframes slide{from{transform:translateX(-100%)}to{transform:none}}
 .menu .mlogo{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .menu .mlogo span{font-family:'Poppins';font-weight:700;font-size:21px;color:var(--blue-d)}
 .mitem{display:flex;align-items:center;gap:14px;padding:13px 12px;border-radius:12px;cursor:pointer;font-weight:600;font-size:15px;color:var(--text)}
+.mitem .ic{color:var(--blue)}
 .mitem:hover{background:var(--blue-l)}
-.mitem i{font-size:21px;color:var(--blue)}
 .toast{position:absolute;left:50%;bottom:90px;transform:translate(-50%,20px);background:var(--blue-d);color:#fff;
   padding:11px 20px;border-radius:22px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;
   transition:.3s;z-index:25;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .fadein{animation:viewIn .35s ease}
 .hint{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}
+@media (max-width:600px){
+  html,body{height:100%}
+  body{padding:0;margin:0;display:block;overflow:hidden;background:var(--screen)}
+  .phone{width:100%;height:100vh;height:100dvh;border-radius:0;padding:0;box-shadow:none;background:transparent}
+  .phone::after{display:none}
+  .screen{border-radius:0;height:100vh;height:100dvh}
+  .statusbar{display:none}
+}
 </style>
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5l-1.6-1.45C5 14.24 2 11.5 2 8.5 2 6 4 4 6.5 4c1.5 0 2.9.7 3.5 1.9C10.6 4.7 12 4 13.5 4 16 4 18 6 18 8.5c0 3-3 5.74-8.4 10.55z"/></symbol>
+<symbol id="i-comment" viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-8.5 8 9 9 0 0 1-3.5-.7L4 20l1.2-3.8A8 8 0 1 1 20 11.5z"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.5 5.3 5.8.5-4.4 3.9 1.3 5.7-5.2-3-5.2 3 1.3-5.7L3.7 9.3l5.8-.5z"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h3.5L8 6h8l1.5 2H21v11H3z"/><circle cx="12" cy="13.5" r="3.2"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M3 20c0-3 2.7-5.2 6-5.2"/><path d="M15 5.2A3.4 3.4 0 0 1 15 11.6"/><path d="M21 20c0-2.5-1.6-4.4-4-5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L10.5 13.5M21 3l-6.5 18-4-8.5L2 8.5z"/></symbol>
+<symbol id="i-photo" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M4 16l4.5-4.5 3.5 3.5 3-3 5.5 5.5"/><circle cx="9" cy="9.5" r="1.4"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><rect x="3.5" y="6" width="12" height="12" rx="2"/><path d="M15.5 10l5-3v10l-5-3z"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M6 4h8l4 4v12H6z"/><path d="M14 4v4h4"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M6 4h9a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5z"/><path d="M6 17.5A1.5 1.5 0 0 1 7.5 16h9"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="11" width="13" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></symbol>
+<symbol id="i-dots" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.7" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="6" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="18" r="2.6"/><path d="M8.4 10.8l7.2-3.6M8.4 13.2l7.2 3.6"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24"><path d="M4 8l4 3.5L12 5l4 6.5L20 8l-1.8 11H5.8z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-userplus" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.6"/><path d="M3.5 20c0-3.4 2.9-5.7 6.5-5.7"/><path d="M16 12v6M13 15h6"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h12M18 17h2"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></symbol>
+<symbol id="i-timeline" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4z"/><path d="M14 7v10"/></symbol>
+<symbol id="i-login" viewBox="0 0 24 24"><path d="M14 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M10 12h10M17 9l3 3-3 3"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M3 12h11M7 9l-3 3 3 3"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 13.5A8 8 0 1 1 10.5 4 6.3 6.3 0 0 0 20 13.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></symbol>
+<symbol id="i-signal" viewBox="0 0 24 24"><path d="M4 18v-3M9 18v-6M14 18v-9M19 18v-12"/></symbol>
+<symbol id="i-wifi" viewBox="0 0 24 24"><path d="M4 9a12 12 0 0 1 16 0M7 12.5a7 7 0 0 1 10 0M10.5 16a2.2 2.2 0 0 1 3 0"/></symbol>
+<symbol id="i-battery" viewBox="0 0 24 24"><rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3"/><rect x="5" y="10" width="9" height="5" rx="0.5" fill="currentColor" stroke="none"/></symbol>
+</defs></svg>
+
 <div class="phone">
-  <div class="screen">
+  <div class="screen" id="screen">
 
     <div class="statusbar">
       <span id="clock">9:41</span>
-      <span class="si"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-3"></i></span>
+      <span class="si"><svg class="ic"><use href="#i-signal"/></svg><svg class="ic"><use href="#i-wifi"/></svg><svg class="ic"><use href="#i-battery"/></svg></span>
     </div>
 
     <div class="views">
 
-      <!-- WELCOME -->
       <div class="view active" id="view-welcome">
         <div class="vbody" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px">
           <svg width="118" height="106" viewBox="0 0 36 32" style="margin-bottom:18px">
             <defs><clipPath id="hl"><path d="M18 31 C11 24 2 18 2 11 C2 6 6 3 10 3 C14 3 17 6 18 9 C19 6 22 3 26 3 C30 3 34 6 34 11 C34 18 25 24 18 31 Z"/></clipPath></defs>
-            <g clip-path="url(#hl)"><rect width="18" height="32" fill="var(--orange)"/><rect x="18" width="18" height="32" fill="var(--amber)"/></g>
+            <g clip-path="url(#hl)"><rect width="18" height="32" fill="#EA5A3D"/><rect x="18" width="18" height="32" fill="#F5B324"/></g>
           </svg>
           <div class="font-d" style="font-weight:700;font-size:34px;color:var(--blue-d)">ReMemory</div>
           <div style="color:var(--muted);font-size:15px;margin-top:6px">Prywatne social media dla rodziny</div>
@@ -156,33 +220,32 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
             <button class="btn btn-pri" onclick="tab('home')">Zaloguj się</button>
             <button class="btn btn-out" onclick="tab('home')">Utwórz konto rodzinne</button>
           </div>
-          <div onclick="tab('home')" style="margin-top:20px;color:var(--muted);font-weight:600;font-size:14px;cursor:pointer"><i class="ti ti-ticket"></i> Dołącz przez zaproszenie</div>
+          <div onclick="tab('home')" style="margin-top:20px;color:var(--muted);font-weight:600;font-size:14px;cursor:pointer"><svg class="ic"><use href="#i-ticket"/></svg> Dołącz przez zaproszenie</div>
           <div class="hint">To klikalny prototyp — naciśnij dowolny przycisk.</div>
         </div>
       </div>
 
-      <!-- HOME -->
       <div class="view" id="view-home">
-        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Moja Tablica</span><i class="ti ti-bell"></i></div>
+        <div class="appbar"><svg class="ic" onclick="openMenu()"><use href="#i-menu"/></svg><span class="ttl">Moja Tablica</span><svg class="ic"><use href="#i-bell"/></svg></div>
         <div class="vbody" id="homefeed">
           <div class="card">
             <div class="photo" style="background:linear-gradient(#BFE0F2 60%,#E9D9A6 60%)">
-              <i class="ti ti-heart lk" onclick="lkPhoto(this)"></i>
+              <svg class="ic lk" onclick="lkPhoto(this)"><use href="#i-heart"/></svg>
               <div class="ov"><div class="pt">Wakacje nad morzem</div><div class="ps">Dzień na plaży!</div></div>
             </div>
             <div class="reacts">
-              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
-              <span class="r" onclick="go('detail')"><i class="ti ti-message-circle"></i><span>8</span></span>
-              <span class="r save ml" onclick="this.classList.toggle('saved')"><i class="ti ti-star"></i></span>
+              <span class="r like" onclick="like(this)"><svg class="ic"><use href="#i-heart"/></svg><span class="cnt">32</span></span>
+              <span class="r" onclick="go('detail')"><svg class="ic"><use href="#i-comment"/></svg><span>8</span></span>
+              <span class="r save ml" onclick="this.classList.toggle('saved')"><svg class="ic"><use href="#i-star"/></svg></span>
             </div>
           </div>
           <div class="card" onclick="go('detail')" style="cursor:pointer">
-            <div class="head"><div class="jicon"><i class="ti ti-book"></i></div><div class="name">Wpis Dziennika</div></div>
+            <div class="head"><div class="jicon"><svg class="ic"><use href="#i-book"/></svg></div><div class="name">Wpis Dziennika</div></div>
             <div class="jbody">Dziś Zosia poszła do szkoły po raz pierwszy! Wszyscy byliśmy bardzo podekscytowani.</div>
             <div class="reacts">
-              <span class="r like" onclick="event.stopPropagation();like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
-              <span class="r"><i class="ti ti-message-circle"></i><span>8</span></span>
-              <span class="r save ml" onclick="event.stopPropagation();this.classList.toggle('saved')"><i class="ti ti-star"></i></span>
+              <span class="r like" onclick="event.stopPropagation();like(this)"><svg class="ic"><use href="#i-heart"/></svg><span class="cnt">32</span></span>
+              <span class="r"><svg class="ic"><use href="#i-comment"/></svg><span>8</span></span>
+              <span class="r save ml" onclick="event.stopPropagation();this.classList.toggle('saved')"><svg class="ic"><use href="#i-star"/></svg></span>
             </div>
           </div>
           <div class="grid3" style="grid-template-columns:1fr 1fr">
@@ -192,61 +255,42 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
         </div>
       </div>
 
-      <!-- FAMILY -->
       <div class="view" id="view-family">
-        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Tablica Rodzinna</span><i class="ti ti-bell"></i></div>
+        <div class="appbar"><svg class="ic" onclick="openMenu()"><use href="#i-menu"/></svg><span class="ttl">Tablica Rodzinna</span><svg class="ic"><use href="#i-bell"/></svg></div>
         <div class="vbody">
-          <div class="tabsrow"><div class="chip on">Najnowsze</div><div class="chip">Najwięcej polubień</div></div>
-          <div class="card">
-            <div class="head"><div class="av" style="width:44px;height:44px;background:var(--blue);font-size:15px">AM</div><div><div class="name">Anna &amp; Marek</div><div class="sub">2 godz. temu</div></div></div>
-            <div class="photo" style="height:160px;background:#CDE3B5"><div class="ov"><div class="pt">Niedzielny spacer w parku</div></div></div>
-            <div class="reacts">
-              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
-              <span class="r" onclick="go('detail')"><i class="ti ti-message-circle"></i><span>12</span></span>
-              <span class="r ml"><i class="ti ti-share"></i></span>
-            </div>
-          </div>
-          <div class="card">
-            <div class="head"><div class="av" style="width:44px;height:44px;background:#E0A93C;font-size:15px">TD</div><div><div class="name">Tata &amp; Dawid</div><div class="sub">wczoraj</div></div></div>
-            <div class="jbody">Słoneczny dzień na działce u dziadków.</div>
-            <div class="reacts">
-              <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">18</span></span>
-              <span class="r"><i class="ti ti-message-circle"></i><span>4</span></span>
-            </div>
-          </div>
+          <div class="tabsrow"><div class="chip on" onclick="famTab('new',this)">Najnowsze</div><div class="chip" onclick="famTab('top',this)">Najwięcej polubień</div></div>
+          <div id="famfeed"></div>
         </div>
       </div>
 
-      <!-- ADD -->
       <div class="view" id="view-add">
-        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Dodaj Wspomnienie</span><span class="sp"></span></div>
+        <div class="appbar"><svg class="ic" onclick="back()"><use href="#i-back"/></svg><span class="ttl">Dodaj Wspomnienie</span><span class="sp"></span></div>
         <div class="vbody">
           <div class="grid3" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
-            <div class="typetile sel" onclick="pickType(this,'Zdjęcie')"><i class="ti ti-photo"></i><div>Zdjęcie</div></div>
-            <div class="typetile" onclick="pickType(this,'Wideo')"><i class="ti ti-video"></i><div>Wideo</div></div>
-            <div class="typetile" onclick="pickType(this,'Notatka')"><i class="ti ti-note"></i><div>Notatka</div></div>
-            <div class="typetile" onclick="pickType(this,'Audio')"><i class="ti ti-microphone"></i><div>Audio</div></div>
+            <div class="typetile sel" onclick="pickType(this,'Zdjęcie')"><svg class="ic"><use href="#i-photo"/></svg><div>Zdjęcie</div></div>
+            <div class="typetile" onclick="pickType(this,'Wideo')"><svg class="ic"><use href="#i-video"/></svg><div>Wideo</div></div>
+            <div class="typetile" onclick="pickType(this,'Notatka')"><svg class="ic"><use href="#i-note"/></svg><div>Notatka</div></div>
+            <div class="typetile" onclick="pickType(this,'Audio')"><svg class="ic"><use href="#i-mic"/></svg><div>Audio</div></div>
           </div>
           <textarea class="field" id="memdesc" rows="3" placeholder="Dodaj opis wspomnienia..."></textarea>
           <div class="row" style="margin-top:14px;justify-content:space-between">
-            <span style="font-weight:600;font-size:14px"><i class="ti ti-lock" style="color:var(--blue)"></i> Widoczność</span>
+            <span style="font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px"><svg class="ic" style="color:var(--blue)"><use href="#i-lock"/></svg> Widoczność</span>
             <div style="display:flex;gap:7px"><div class="chip" id="vis-me" onclick="setVis('me')">Tylko ja</div><div class="chip on" id="vis-fam" onclick="setVis('fam')">Rodzina</div></div>
           </div>
           <button class="btn btn-pri" style="margin-top:16px" onclick="saveMemory()">Zapisz wspomnienie</button>
         </div>
       </div>
 
-      <!-- DETAIL -->
       <div class="view" id="view-detail">
-        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Wpis</span><i class="ti ti-dots"></i></div>
+        <div class="appbar"><svg class="ic" onclick="back()"><use href="#i-back"/></svg><span class="ttl">Wpis</span><svg class="ic"><use href="#i-dots"/></svg></div>
         <div class="vbody" id="detailbody">
           <div class="photo" style="height:170px;border-radius:14px;background:linear-gradient(#BFE0F2 64%,#E9D9A6 64%);margin-bottom:12px">
-            <i class="ti ti-heart lk" onclick="lkPhoto(this)"></i>
+            <svg class="ic lk" onclick="lkPhoto(this)"><use href="#i-heart"/></svg>
           </div>
           <div class="font-d" style="font-weight:600;font-size:17px;color:var(--blue-d)">Wakacje nad morzem</div>
           <div class="reacts" style="padding:9px 0 14px">
-            <span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">32</span></span>
-            <span class="r"><i class="ti ti-message-circle"></i><span id="ccount">2</span> komentarze</span>
+            <span class="r like" onclick="like(this)"><svg class="ic"><use href="#i-heart"/></svg><span class="cnt">32</span></span>
+            <span class="r"><svg class="ic"><use href="#i-comment"/></svg><span id="ccount">2</span> komentarze</span>
           </div>
           <div id="dcomments">
             <div class="cmt"><div class="av" style="width:34px;height:34px;background:#C0603C;font-size:12px">BK</div><div class="bubble"><div class="cname">Babcia Krysia</div><div class="ctext">Cudowne zdjęcie! Tęsknię za Wami.</div></div></div>
@@ -255,38 +299,36 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
         </div>
         <div class="cbar">
           <input id="cinput" placeholder="Napisz komentarz..." onkeydown="if(event.key==='Enter')addComment()">
-          <i class="ti ti-send" onclick="addComment()"></i>
+          <svg class="ic" onclick="addComment()"><use href="#i-send"/></svg>
         </div>
       </div>
 
-      <!-- HIGHLIGHTS -->
       <div class="view" id="view-highlights">
-        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Wyróżnione</span><i class="ti ti-star"></i></div>
+        <div class="appbar"><svg class="ic" onclick="openMenu()"><use href="#i-menu"/></svg><span class="ttl">Wyróżnione</span><svg class="ic"><use href="#i-star"/></svg></div>
         <div class="vbody">
           <div class="card">
             <div class="photo" style="background:#D6CFEA">
-              <div style="position:absolute;top:12px;left:12px"><span class="badge"><i class="ti ti-star"></i> Wyróżnione</span></div>
+              <div style="position:absolute;top:12px;left:12px"><span class="badge"><svg class="ic" style="width:14px;height:14px"><use href="#i-star"/></svg> Wyróżnione</span></div>
               <div class="ov"><div class="pt">25. rocznica ślubu</div><div class="ps">Najważniejszy dzień roku</div></div>
             </div>
           </div>
           <div class="sec">Najważniejsze momenty</div>
           <div class="grid3" style="grid-template-columns:1fr 1fr;gap:12px">
-            <div class="thumb" style="height:104px;background:#BFE0F2;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
-            <div class="thumb" style="height:104px;background:#D9E8CF;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
-            <div class="thumb" style="height:104px;background:#F2D9C0;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
-            <div class="thumb" style="height:104px;background:#CFE3F4;position:relative"><i class="ti ti-star" style="position:absolute;top:8px;right:9px;color:var(--amber);font-size:18px"></i></div>
+            <div class="thumb" style="height:104px;background:#BFE0F2"><svg class="ic" style="position:absolute;top:8px;right:9px;width:18px;height:18px;color:var(--amber)"><use href="#i-star"/></svg></div>
+            <div class="thumb" style="height:104px;background:#D9E8CF"><svg class="ic" style="position:absolute;top:8px;right:9px;width:18px;height:18px;color:var(--amber)"><use href="#i-star"/></svg></div>
+            <div class="thumb" style="height:104px;background:#F2D9C0"><svg class="ic" style="position:absolute;top:8px;right:9px;width:18px;height:18px;color:var(--amber)"><use href="#i-star"/></svg></div>
+            <div class="thumb" style="height:104px;background:#CFE3F4"><svg class="ic" style="position:absolute;top:8px;right:9px;width:18px;height:18px;color:var(--amber)"><use href="#i-star"/></svg></div>
           </div>
         </div>
       </div>
 
-      <!-- PROFILE -->
       <div class="view" id="view-profile">
-        <div class="appbar"><i class="ti ti-menu-2" onclick="openMenu()"></i><span class="ttl">Profil</span><i class="ti ti-settings"></i></div>
+        <div class="appbar"><svg class="ic" onclick="openMenu()"><use href="#i-menu"/></svg><span class="ttl">Profil</span><svg class="ic"><use href="#i-settings"/></svg></div>
         <div class="vbody">
           <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px">
             <div class="av" style="width:88px;height:88px;background:var(--blue);font-size:30px;margin-bottom:10px">AK</div>
             <div class="font-d" style="font-weight:600;font-size:19px;color:var(--blue-d)">Anna Kowalska</div>
-            <div class="sub" style="margin-top:3px"><i class="ti ti-users"></i> Rodzina Kowalskich</div>
+            <div class="sub" style="margin-top:3px;display:flex;align-items:center;gap:6px"><svg class="ic" style="width:15px;height:15px"><use href="#i-users"/></svg> Rodzina Kowalskich</div>
           </div>
           <div class="grid3" style="margin-bottom:18px">
             <div class="stat"><b>128</b><span>Wspomnienia</span></div>
@@ -294,21 +336,20 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
             <div class="stat"><b>6</b><span>Rodzina</span></div>
           </div>
           <div class="sec">Skróty</div>
-          <div class="row" onclick="go('familyManage')" style="cursor:pointer"><i class="ti ti-users" style="color:var(--blue);font-size:21px"></i><span style="font-weight:600">Moja Rodzina</span><i class="ti ti-chevron-right ml" style="color:var(--muted)"></i></div>
-          <div class="row" onclick="go('timeline')" style="cursor:pointer"><i class="ti ti-timeline" style="color:var(--blue);font-size:21px"></i><span style="font-weight:600">Oś czasu</span><i class="ti ti-chevron-right ml" style="color:var(--muted)"></i></div>
+          <div class="row" onclick="go('familyManage')" style="cursor:pointer"><svg class="ic" style="color:var(--blue)"><use href="#i-users"/></svg><span style="font-weight:600">Moja Rodzina</span><svg class="ic ml" style="color:var(--muted);margin-left:auto"><use href="#i-chevron"/></svg></div>
+          <div class="row" onclick="go('timeline')" style="cursor:pointer"><svg class="ic" style="color:var(--blue)"><use href="#i-timeline"/></svg><span style="font-weight:600">Oś czasu</span><svg class="ic" style="color:var(--muted);margin-left:auto"><use href="#i-chevron"/></svg></div>
           <button class="btn btn-out" style="margin-top:10px" onclick="tab('welcome')">Wyloguj się</button>
         </div>
       </div>
 
-      <!-- FAMILY MANAGE -->
       <div class="view" id="view-familyManage">
-        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Moja Rodzina</span><span class="sp"></span></div>
+        <div class="appbar"><svg class="ic" onclick="back()"><use href="#i-back"/></svg><span class="ttl">Moja Rodzina</span><span class="sp"></span></div>
         <div class="vbody">
-          <div class="row"><div class="av" style="width:40px;height:40px;background:var(--blue);font-size:13px">AN</div><div style="flex:1"><div class="name">Anna</div><div class="sub">Mama</div></div><i class="ti ti-crown" style="color:var(--amber)"></i></div>
+          <div class="row"><div class="av" style="width:40px;height:40px;background:var(--blue);font-size:13px">AN</div><div style="flex:1"><div class="name">Anna</div><div class="sub">Mama</div></div><svg class="ic" style="color:var(--amber)"><use href="#i-crown"/></svg></div>
           <div class="row"><div class="av" style="width:40px;height:40px;background:#E0A93C;font-size:13px">MA</div><div style="flex:1"><div class="name">Marek</div><div class="sub">Tata</div></div></div>
           <div class="row"><div class="av" style="width:40px;height:40px;background:#3C8C7A;font-size:13px">ZO</div><div style="flex:1"><div class="name">Zosia</div><div class="sub">Córka</div></div></div>
           <div class="row"><div class="av" style="width:40px;height:40px;background:#C0603C;font-size:13px">BK</div><div style="flex:1"><div class="name">Babcia Krysia</div><div class="sub">Babcia</div></div></div>
-          <button class="btn btn-pri" style="margin-top:6px" onclick="toast('Wysłano zaproszenie')"><i class="ti ti-user-plus"></i> Zaproś członka rodziny</button>
+          <button class="btn btn-pri" style="margin-top:6px" onclick="toast('Wysłano zaproszenie')"><svg class="ic"><use href="#i-userplus"/></svg> Zaproś członka rodziny</button>
           <div style="background:var(--blue-l);border-radius:14px;padding:14px;text-align:center;margin-top:14px">
             <div style="font-size:12px;color:var(--muted)">Kod zaproszenia rodziny</div>
             <div class="font-d" style="font-weight:700;font-size:20px;color:var(--blue);letter-spacing:2px;margin-top:3px">REM-2K4P</div>
@@ -316,49 +357,42 @@ h1,h2,h3,.font-d{font-family:'Poppins',sans-serif}
         </div>
       </div>
 
-      <!-- TIMELINE -->
       <div class="view" id="view-timeline">
-        <div class="appbar"><i class="ti ti-arrow-left" onclick="back()"></i><span class="ttl">Oś czasu</span><i class="ti ti-calendar"></i></div>
+        <div class="appbar"><svg class="ic" onclick="back()"><use href="#i-back"/></svg><span class="ttl">Oś czasu</span><svg class="ic"><use href="#i-calendar"/></svg></div>
         <div class="vbody">
-          <div class="tabsrow"><div class="chip on">2025</div><div class="chip">2024</div><div class="chip">2023</div></div>
-          <div class="tl">
-            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Wrzesień 2025</div>
-              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#D9E8CF"></div><div class="name">Pierwszy dzień szkoły</div></div></div>
-            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Sierpień 2025</div>
-              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#BFE0F2"></div><div class="name">Wakacje nad morzem</div></div></div>
-            <div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">Lipiec 2025</div>
-              <div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:#F2D9C0"></div><div class="name">Urodziny Babci</div></div></div>
-          </div>
+          <div class="tabsrow"><div class="chip on" onclick="selectYear('2025',this)">2025</div><div class="chip" onclick="selectYear('2024',this)">2024</div><div class="chip" onclick="selectYear('2023',this)">2023</div></div>
+          <div class="tl" id="tlbody"></div>
         </div>
       </div>
 
     </div>
 
-    <!-- TABBAR -->
     <div class="tabbar" id="tabbar" style="display:none">
-      <button class="tab on" id="tab-home" onclick="tab('home')"><i class="ti ti-home"></i></button>
-      <button class="tab" id="tab-heart" onclick="tab('family')"><i class="ti ti-heart"></i></button>
-      <div class="tabcam" onclick="go('add')"><i class="ti ti-camera"></i></div>
-      <button class="tab" id="tab-star" onclick="tab('highlights')"><i class="ti ti-star"></i></button>
-      <button class="tab" id="tab-user" onclick="tab('profile')"><i class="ti ti-user"></i></button>
+      <button class="tab on" id="tab-home" onclick="tab('home')"><svg class="ic"><use href="#i-home"/></svg></button>
+      <button class="tab" id="tab-heart" onclick="tab('family')"><svg class="ic"><use href="#i-heart"/></svg></button>
+      <div class="tabcam" onclick="go('add')"><svg class="ic"><use href="#i-plus"/></svg></div>
+      <button class="tab" id="tab-star" onclick="tab('highlights')"><svg class="ic"><use href="#i-star"/></svg></button>
+      <button class="tab" id="tab-user" onclick="tab('profile')"><svg class="ic"><use href="#i-user"/></svg></button>
     </div>
 
-    <!-- MENU DRAWER -->
     <div class="menu" id="menu">
       <div class="scrim" onclick="closeMenu()"></div>
       <div class="panel">
         <div class="mlogo">
-          <svg width="34" height="30" viewBox="0 0 36 32"><g clip-path="url(#hl)"><rect width="18" height="32" fill="var(--orange)"/><rect x="18" width="18" height="32" fill="var(--amber)"/></g></svg>
+          <svg width="34" height="30" viewBox="0 0 36 32"><g clip-path="url(#hl)"><rect width="18" height="32" fill="#EA5A3D"/><rect x="18" width="18" height="32" fill="#F5B324"/></g></svg>
           <span>ReMemory</span>
         </div>
-        <div class="mitem" onclick="tab('home');closeMenu()"><i class="ti ti-home"></i> Moja Tablica</div>
-        <div class="mitem" onclick="tab('family');closeMenu()"><i class="ti ti-users-group"></i> Tablica Rodzinna</div>
-        <div class="mitem" onclick="go('add');closeMenu()"><i class="ti ti-plus"></i> Dodaj Wspomnienie</div>
-        <div class="mitem" onclick="tab('highlights');closeMenu()"><i class="ti ti-star"></i> Wyróżnione</div>
-        <div class="mitem" onclick="tab('profile');closeMenu()"><i class="ti ti-user"></i> Profil</div>
-        <div class="mitem" onclick="go('familyManage');closeMenu()"><i class="ti ti-users"></i> Moja Rodzina</div>
-        <div class="mitem" onclick="go('timeline');closeMenu()"><i class="ti ti-timeline"></i> Oś czasu</div>
-        <div class="mitem" style="margin-top:auto;color:var(--red)" onclick="tab('welcome');closeMenu()"><i class="ti ti-logout" style="color:var(--red)"></i> Wyloguj się</div>
+        <div class="mitem" onclick="tab('welcome');closeMenu()"><svg class="ic"><use href="#i-login"/></svg> Ekran startowy</div>
+        <div class="mitem" onclick="tab('home');closeMenu()"><svg class="ic"><use href="#i-home"/></svg> Moja Tablica</div>
+        <div class="mitem" onclick="tab('family');closeMenu()"><svg class="ic"><use href="#i-users"/></svg> Tablica Rodzinna</div>
+        <div class="mitem" onclick="go('add');closeMenu()"><svg class="ic"><use href="#i-plus"/></svg> Dodaj Wspomnienie</div>
+        <div class="mitem" onclick="go('detail');closeMenu()"><svg class="ic"><use href="#i-photo"/></svg> Szczegóły wpisu</div>
+        <div class="mitem" onclick="tab('highlights');closeMenu()"><svg class="ic"><use href="#i-star"/></svg> Wyróżnione</div>
+        <div class="mitem" onclick="tab('profile');closeMenu()"><svg class="ic"><use href="#i-user"/></svg> Profil</div>
+        <div class="mitem" onclick="go('familyManage');closeMenu()"><svg class="ic"><use href="#i-users"/></svg> Moja Rodzina</div>
+        <div class="mitem" onclick="go('timeline');closeMenu()"><svg class="ic"><use href="#i-timeline"/></svg> Oś czasu</div>
+        <div class="mitem" id="darkitem" onclick="toggleDark()"><svg class="ic" id="darkicon"><use href="#i-moon" id="darkuse"/></svg> <span id="darklabel">Tryb ciemny</span> <span class="mnum" id="darkstate">WYŁ</span></div>
+        <div class="mitem" style="margin-top:8px;color:var(--red)" onclick="tab('welcome');closeMenu()"><svg class="ic" style="color:var(--red)"><use href="#i-logout"/></svg> Wyloguj się</div>
       </div>
     </div>
 
@@ -389,12 +423,9 @@ function like(el){
   el.classList.toggle('liked');
   const c = el.querySelector('.cnt');
   if(c){ let n=parseInt(c.textContent,10); c.textContent = el.classList.contains('liked')? n+1 : n-1; }
-  const i = el.querySelector('i'); i.classList.remove('pop'); void i.offsetWidth; i.classList.add('pop');
+  const i = el.querySelector('svg'); if(i){ i.classList.remove('pop'); void i.offsetWidth; i.classList.add('pop'); }
 }
-function lkPhoto(el){
-  el.classList.toggle('liked');
-  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-}
+function lkPhoto(el){ el.classList.toggle('liked'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
 
 let visibility='fam';
 function setVis(v){ visibility=v;
@@ -409,11 +440,11 @@ function saveMemory(){
   const card = document.createElement('div');
   card.className='card fadein';
   card.innerHTML =
-    '<div class="head"><div class="jicon"><i class="ti ti-book"></i></div><div><div class="name">'+memType+'</div><div class="sub">teraz · '+(visibility==='fam'?'Rodzina':'Tylko ja')+'</div></div></div>'+
+    '<div class="head"><div class="jicon"><svg class="ic"><use href="#i-book"/></svg></div><div><div class="name">'+memType+'</div><div class="sub">teraz · '+(visibility==='fam'?'Rodzina':'Tylko ja')+'</div></div></div>'+
     '<div class="jbody">'+escapeHtml(body)+'</div>'+
-    '<div class="reacts"><span class="r like" onclick="like(this)"><i class="ti ti-heart"></i><span class="cnt">0</span></span>'+
-    '<span class="r"><i class="ti ti-message-circle"></i><span>0</span></span>'+
-    '<span class="r save ml" onclick="this.classList.toggle(\'saved\')"><i class="ti ti-star"></i></span></div>';
+    '<div class="reacts"><span class="r like" onclick="like(this)"><svg class="ic"><use href="#i-heart"/></svg><span class="cnt">0</span></span>'+
+    '<span class="r"><svg class="ic"><use href="#i-comment"/></svg><span>0</span></span>'+
+    '<span class="r save ml" onclick="this.classList.toggle(\'saved\')"><svg class="ic"><use href="#i-star"/></svg></span></div>';
   document.getElementById('homefeed').prepend(card);
   document.getElementById('memdesc').value='';
   tab('home');
@@ -436,8 +467,75 @@ let tt;
 function toast(msg){ const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('show'),1800); }
 function escapeHtml(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+function toggleDark(){
+  const s=document.getElementById('screen');
+  const on=s.classList.toggle('dark');
+  document.body.classList.toggle('dark', on);
+  document.getElementById('darklabel').textContent = on?'Tryb jasny':'Tryb ciemny';
+  document.getElementById('darkstate').textContent = on?'WŁ':'WYŁ';
+  document.getElementById('darkuse').setAttribute('href', on?'#i-sun':'#i-moon');
+}
+
+const tlData = {
+  '2025':[
+    {m:'Wrzesień 2025', t:'Pierwszy dzień szkoły', c:'#D9E8CF'},
+    {m:'Sierpień 2025', t:'Wakacje nad morzem', c:'#BFE0F2'},
+    {m:'Lipiec 2025', t:'Urodziny Babci', c:'#F2D9C0'}
+  ],
+  '2024':[
+    {m:'Grudzień 2024', t:'Święta u dziadków', c:'#E7C9C9'},
+    {m:'Październik 2024', t:'Wycieczka w góry', c:'#CDE3B5'},
+    {m:'Maj 2024', t:'Komunia Zosi', c:'#E6DAF0'},
+    {m:'Luty 2024', t:'Ferie na nartach', c:'#CFE3F4'}
+  ],
+  '2023':[
+    {m:'Listopad 2023', t:'Remont kuchni', c:'#E9D9A6'},
+    {m:'Sierpień 2023', t:'Ślub cioci Oli', c:'#F2D9C0'},
+    {m:'Czerwiec 2023', t:'Pierwszy rower Zosi', c:'#D9E8CF'}
+  ]
+};
+function renderTimeline(y){
+  document.getElementById('tlbody').innerHTML = tlData[y].map(e =>
+    '<div class="tle"><div class="dot"></div><div class="sub" style="margin-bottom:6px">'+e.m+'</div>'+
+    '<div class="card" style="display:flex;align-items:center;gap:11px;padding:10px;margin:0"><div style="width:46px;height:46px;border-radius:10px;background:'+e.c+'"></div><div class="name">'+e.t+'</div></div></div>'
+  ).join('');
+}
+function selectYear(y, el){
+  document.querySelectorAll('#view-timeline .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderTimeline(y);
+}
+
+const famPosts = [
+  {ini:'AM',av:'var(--blue)',name:'Anna &amp; Marek',time:'2 godz. temu',photo:true,title:'Niedzielny spacer w parku',bg:'#CDE3B5',likes:32,comments:12},
+  {ini:'TD',av:'#E0A93C',name:'Tata &amp; Dawid',time:'wczoraj',photo:false,text:'Słoneczny dzień na działce u dziadków.',likes:18,comments:4},
+  {ini:'AM',av:'var(--blue)',name:'Anna &amp; Marek',time:'2 tyg. temu',photo:true,title:'25. rocznica ślubu',bg:'#E6DAF0',likes:142,comments:38},
+  {ini:'BK',av:'#C0603C',name:'Babcia Krysia',time:'miesiąc temu',photo:true,title:'80. urodziny Babci',bg:'#F2D9C0',likes:98,comments:26},
+  {ini:'ZO',av:'#3C8C7A',name:'Zosia',time:'rok temu',photo:true,title:'Komunia Zosi',bg:'#CFE3F4',likes:76,comments:19}
+];
+function postCard(p){
+  const media = p.photo
+    ? '<div class="photo" style="height:160px;background:'+p.bg+'"><div class="ov"><div class="pt">'+p.title+'</div></div></div>'
+    : '<div class="jbody">'+p.text+'</div>';
+  return '<div class="card"><div class="head"><div class="av" style="width:44px;height:44px;background:'+p.av+';font-size:15px">'+p.ini+'</div><div><div class="name">'+p.name+'</div><div class="sub">'+p.time+'</div></div></div>'+
+    media+
+    '<div class="reacts"><span class="r like" onclick="like(this)"><svg class="ic"><use href="#i-heart"/></svg><span class="cnt">'+p.likes+'</span></span>'+
+    '<span class="r" onclick="go(\'detail\')"><svg class="ic"><use href="#i-comment"/></svg><span>'+p.comments+'</span></span>'+
+    '<span class="r ml"><svg class="ic"><use href="#i-share"/></svg></span></div></div>';
+}
+function renderFam(tab){
+  let list = famPosts.slice();
+  if(tab==='top') list.sort((a,b)=>b.likes-a.likes);
+  document.getElementById('famfeed').innerHTML = list.map(postCard).join('');
+}
+function famTab(tab, el){
+  document.querySelectorAll('#view-family .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderFam(tab);
+}
+
 function clock(){ const d=new Date(); document.getElementById('clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
-clock(); setInterval(clock,30000);
+clock(); setInterval(clock,30000); renderTimeline('2025'); renderFam('new');
 </script>
 </body>
 </html>
